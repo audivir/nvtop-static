@@ -30,7 +30,7 @@ version="$("$NVTOP" --version)"
 echo "$version" | grep -q '^nvtop version ' || fail "nvtop --version: $version"
 pass "$version"
 
-"$NVTOP" --help | grep -q -i 'usage' || fail "nvtop --help"
+"$NVTOP" --help | grep -q 'Available options' || fail "nvtop --help"
 pass "usage"
 
 # runners have no GPU, where nvtop draws nothing but says so and exits, which also shows that
