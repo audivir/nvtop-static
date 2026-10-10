@@ -1,0 +1,62 @@
+name: Release
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: .github/scripts/fetch-submodules.sh vendor/nvtop
+      - name: Check that the release tag matches vendor/nvtop
+        run: |
+          nvtop_version="$(sed -n 's/^project(nvtop VERSION \([0-9.]*\).*/\1/p' vendor/nvtop/CMakeLists.txt)"
+          if [ "$nvtop_version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Release tag $GITHUB_REF_NAME does not match vendor/nvtop ($nvtop_version)"
+            exit 1
+          fi
+  build:
+    needs: check-version
+    strategy:
+      matrix:
+        include:
+          - os: macos-15
+            asset: macos-arm64
+          - os: ubuntu-latest
+            asset: linux-amd64
+          - os: ubuntu-24.04-arm
+            asset: linux-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - run: .github/scripts/fetch-submodules.sh
+      - uses: mlugg/setup-zig@v2.2.1
+        with:
+          version: 0.15.2
+      - run: ./build.sh
+      - name: Package nvtop
+        run: |
+          tar -czf nvtop-static-${{ matrix.asset }}.tar.gz -C dist bin share
+      - name: Collect sources
+        if: matrix.asset == 'linux-amd64'
+        run: tar -czf nvtop-static-sources.tar.gz --exclude=.git vendor
+      - uses: actions/upload-artifact@v7
+        with:
+          name: nvtop-static-${{ matrix.asset }}
+          path: nvtop-static-*.tar.gz
+          retention-days: 1
+  release:
+    name: Upload to GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: nvtop-static-*
+          path: dist
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v3
+        with:
+          files: dist/*

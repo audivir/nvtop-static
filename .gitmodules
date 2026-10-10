@@ -1,0 +1,8 @@
+[submodule "vendor/nvtop"]
+    path = vendor/nvtop
+    url = https://github.com/Syllo/nvtop.git
+    shallow = true
+[submodule "vendor/ncurses"]
+    path = vendor/ncurses
+    url = https://github.com/ThomasDickey/ncurses-snapshots.git
+    shallow = true

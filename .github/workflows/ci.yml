@@ -1,0 +1,40 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  prek:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: j178/prek-action@v3.0.0
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: ubuntu-24.04-arm
+          - os: macos-15
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - run: .github/scripts/fetch-submodules.sh
+      - uses: mlugg/setup-zig@v2.2.1
+        with:
+          version: 0.15.2
+      - run: ./build.sh
+      - run: ./tests/run_smoke_tests.sh
+      - name: Test on CentOS 7, Rocky Linux 8, and Debian
+        if: runner.os == 'Linux'
+        run: |
+          for image in centos:7 rockylinux:8 debian:stable-slim; do
+            docker run --rm -v "$PWD":/work -w /work "$image" sh -c '
+              rm -rf /usr/share/terminfo /lib/terminfo /etc/terminfo &&
+              ./tests/run_smoke_tests.sh'
+          done
