@@ -161,7 +161,7 @@ echo ">>> nvtop"
     -DCURSES_LIBRARY="$PREFIX/lib/libncursesw.a" \
     -DCURSES_CURSES_LIBRARY="$PREFIX/lib/libncursesw.a" \
     -DCURSES_NCURSES_LIBRARY="$PREFIX/lib/libncursesw.a" \
-    -DCMAKE_C_FLAGS="-Os -DNCURSES_STATIC" \
+    -DCMAKE_C_FLAGS="-Os -DNCURSES_STATIC -I$PREFIX/include/ncursesw -I$PREFIX/include" \
     -DCMAKE_EXE_LINKER_FLAGS="-s" \
     "${GPUS[@]}"
   cmake --build build -j"$JOBS"
