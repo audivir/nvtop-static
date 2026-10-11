@@ -7,7 +7,7 @@ env:
   NAME: nvtop
   DIR: nvtop
   URL: https://github.com/Syllo/nvtop.git
-  PATTERN: '^[0-9]+(\.[0-9]+)+$'
+  PATTERN: '^3\.3\.1$'
   RELEASE_SED: ''
 jobs:
   update:
