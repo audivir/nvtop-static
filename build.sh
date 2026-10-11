@@ -45,7 +45,7 @@ PREFIX="$WORK/deps"
 HOST="$WORK/host"
 DIST="$ROOT_DIR/dist"
 
-# There is no fully static build: nvtop loads libnvidia-ml of the NVIDIA driver at runtime, which
+# there is no fully static build: nvtop loads libnvidia-ml of the NVIDIA driver at runtime, which
 # needs a dynamic libc, and musl hosts have no NVIDIA driver anyway.
 case "$OS-$ARCH" in
   Linux-x86_64 | Linux-aarch64)
