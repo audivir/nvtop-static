@@ -2,7 +2,7 @@
 _commit: e730ed7
 _src_path: gh:audivir/copier-template
 description: Static build of nvtop with ncurses linked in
-github_org: audivir
+github_org: zshsetup
 project_name: nvtop-static
 project_slug: nvtop_static
 project_type: shell
